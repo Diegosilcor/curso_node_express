@@ -1,128 +1,135 @@
-// const EventEmitter = require('events');
-// console.log(EventEmitter);
+/*----------CREANDO SERVIDOR----------*/
 
-/*------------MODULO EVENTS-----------*/
-// const EventEmitter = require('events');
+// const http = require('http');
 
-// const emisorProductos = new EventEmitter();
+// const servidor = http.createServer((req, res) => { // Este metodo crea un servidor
+//   // Proceso
+//   res.end('Hola, mundo');
+// }); 
 
-// emisorProductos.on('compra', (total,numProductos) => {
-//   console.log(`Se realizo una compra por $${total}.`);
-//   console.log(`Numero de productos:${numProductos}`);
+// const puerto = 4000;
+
+// servidor.listen(puerto, () => {
+//   console.log(`El servidor esta escuchando en http://localhost: ${puerto}...`);
 // });
 
-// emisorProductos.emit('compra', 500,5);
 
-/*------------PROMESAS-----------*/
-// const promesaCumplida = false;
+/*---------REQUEST=SOLICITUD-------*/
 
-// const miPromesa = new Promise((resolve, reject) => {
-//   setTimeout(() => {
-//    if (promesaCumplida) {
-//      resolve('Promesa cumplida');
-//    } else {
-//      reject('Promesa rechazada...');
-//    }
-//   },3000);
+// const http = require('http');
+
+// const servidor = http.createServer((req, res) => { 
+//   console.log('===> req (solicitud)');
+//   console.log(req);
+//   console.log(req.url);
+//   console.log(req.method);
+//   console.log(req.headers);
+
+//   res.end('Hola, mundo');
+// }); 
+
+// const puerto = 4000;
+
+// servidor.listen(puerto, () => {
+//   console.log(`El servidor esta escuchando en http://localhost: ${puerto}...`);
 // });
 
-// const manejarPromesaCumplida = (valor) => {
-//   console.log(valor);
-// };
+/*---------RESPONSE=RESPUESTA-------*/
 
-// const manejarPromesaRechazada = (razonRechazo) => {
-//   console.log(razonRechazo);
-// }
-// miPromesa.then(manejarPromesaCumplida, manejarPromesaRechazada);
+// const http = require('http');
 
-/*---------EJEMPLO---------*/
-// const estatusPedido = () => {
-//   return Math.random() < 0.8;
+// const servidor = http.createServer((req, res) => { 
+//   console.log('===> res (respuesta)');
 
-// };
-// const miPedidoDePizza = new Promise((resolve, reject) => {
-//   setTimeout(() => {
-//     if (estatusPedido()) {
-//       resolve('Pedido exitoso. Su pizza esta en camino.');
-//     } else {
-//       reject('Ocurrio un error. Por favor intente nuevamente.')
-//     }
-//   }, 3000);
+  // console.log(res.statusCode); // 200 ok
+  // res.statusCode = 404;
+  // console.log(res.statusCode); // 404 Not found
+
+//   res.setHeader('content-type', 'application/json'); // Obtener elementos de los header/cabeceras
+//   console.log(res.getHeaders());
+  
+//   res.end('Hola, mundo');
+// }); 
+
+// const puerto = 4000;
+
+// servidor.listen(puerto, () => {
+//   console.log(`El servidor esta escuchando en http://localhost: ${puerto}...`);
 // });
 
-// Unificar todo en un bloque de codigo
+/*---------------MODULO URL--------------*/
+// const miURL = new URL('http://www.ejemplo.org/cursos/programacion?ordernar=vistas&nivel=1');
+// console.log(miURL.hostname); // www.ejemplo.org 
+// console.log(miURL.pathname); // cursos/programacion 
+// console.log(miURL.searchParams);
+// console.log(miURL.searchParams.get('ordenar'));
+// console.log(miURL.searchParams.get('nivel'));
+// console.log(miURL.protocol);
 
-// miPedidoDePizza
-//   .then((mensajeDeConfirmacion) => {
-//     console.log(mensajeDeConfirmacion);
-//   })
+/*-----------MANEJAR LAS DISTINTAS RUTAS EN UN SERVIDOR CON NODE.JS---------*/ 
+const http = require('http');
+const {infoCursos} = require('./cursos');
 
-//  Catch maneja el rechazo de esa promesa 
+const servidor = http.createServer((req, res) => {
+  const {method} = req;
 
-//   .catch((mensajeDeError) => {
-//     console.log(mensajeDeError);
-//   })
+  switch(method) {
+    case 'GET':
+      return manejarSolicitudGET(req, res);
+    case 'POST':
+      return manejarSolicitudPOST(req, res);
+    default:
+      res.statusCode = 501;
+      res.end(`El metodo usado no puede ser manejado por el servidor: ${method}`);
+  }
+});
 
-// Otras formar de utilizar catch y then
+function manejarSolicitudGET(req, res) {
+  const path = req.url;
 
-// const manejarPedido = ((mensajeDeConfirmacion) => {
-//   console.log(mensajeDeConfirmacion);
-// });
+  console.log(res.statusCode); // Sera 200 ok, por defecto
 
-// const manejarRechazo = ((mensajeDeError) => {
-//   console.log(mensajeDeError);
-// });
-
-// miPedidoDePizza.then(manejarPedido).catch(manejarRechazo);
-
-
-/*-----------ENCADENAR PROMESAS Y ASYNC AWAIT----------*/
-
-function ordenarProducto(producto) {
-  return new Promise((resolve, reject) => {
-    console.log(`Ordenando: ${producto} de Diego Silva Cordoba`);
-    setTimeout(() => {
-    if (producto === 'taza') {
-      resolve('Ordenando una taza con el logo de Diego Silva Cordoba');
-    } else {
-      reject('Este producto no esta disponible actualmente.');
-    }
-    }, 2000);
-  });
+  if (path === '/') {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end('Bienvenidos a mi primer servidor y API creados con Node.js');
+  } else if (path === '/cursos') {
+    res.end(JSON.stringify(infoCursos));
+  } else if (path === '/cursos/programacion') {
+    return res.end(JSON.stringify(infoCursos.programacion));
+  }
+  res.statusCode = 404;
+  return res.end('El recurso solicitado no existe...');
 }
 
-function procesarPedido(respuesta) {
-  return new Promise(resolve => {
-    console.log('Procesando respuesta');
-    console.log(`La respuesta fue: "${respuesta}"`);
-    setTimeout(() => {
-      resolve('Gracias por su compra. Disfruta tu producto de Diego Silva Cordoba');
-    }, 4000);
-  });
-}
+function manejarSolicitudPOST(req, res) {
+  const path = req.url;
+  if (path === '/cursos/programacion') {
+    
+    let cuerpo = '';
+    req.on('data', contenido => {
+      cuerpo += contenido.toString();
+    });
 
-ordernarProducto('taza')
-  .then(respuesta => {
-    console.log('Respuesta recibida');
-    console.log(respuesta);
-    return procesarPedido(respuesta);
-  })
-  .then(respuestaProcesada => {
-    console.log(respuestaProcesada);
-  })
-  .catch(error => {
-    console.log(error);
-  });
+    req.on('end', () => {
+      console.log(cuerpo);
+      console.log(typeof cuerpo);
+      // Convertir a un objeto de JavasScript
+      cuerpo = JSON.parse(cuerpo);
+      console.log(typeof cuerpo);
+      console.log(cuerpo.titulo);
+      res.end('El servidor recibio una solicitud POST para /cursos/programacion');
 
-async function realizarPedido(producto) {
-  try {
-  const respuesta = await ordenarProducto(producto);
-  console.log('Respuesta recibida');
-  const respuestaProcesada = procesarPedido(respuesta);
-  console.log(respuestaProcesada);
-  } catch (error) {
-    console.log(error);
+    });
+    // return res.end('El servidor recibio una solicitud POST para /cursos/programacion');
   }
 }
+const PUERTO = 3000;
 
-realizarPedido('taza');
+servidor.listen(PUERTO, () => {
+  console.log(`El servidor esta escuchando en el puerto ${PUERTO}`);
+});
+
+
+
+
+
