@@ -1,135 +1,134 @@
-/*----------CREANDO SERVIDOR----------*/
+// const express = require('express');
+// const app = express();
 
-// const http = require('http');
+// const { infoCursos } = require('./cursos');
 
-// const servidor = http.createServer((req, res) => { // Este metodo crea un servidor
-//   // Proceso
-//   res.end('Hola, mundo');
-// }); 
+// // Routers
+// const routerProgramacion = express.Router();
+// app.use('/api/cursos/programacion', routerProgramacion);
 
-// const puerto = 4000;
 
-// servidor.listen(puerto, () => {
-//   console.log(`El servidor esta escuchando en http://localhost: ${puerto}...`);
+
+
+// // Routing
+
+// app.get('/', (req, res) => {
+//   res.send('Mi primer servidor con Express. Cursos 💻.')
 // });
 
-
-/*---------REQUEST=SOLICITUD-------*/
-
-// const http = require('http');
-
-// const servidor = http.createServer((req, res) => { 
-//   console.log('===> req (solicitud)');
-//   console.log(req);
-//   console.log(req.url);
-//   console.log(req.method);
-//   console.log(req.headers);
-
-//   res.end('Hola, mundo');
-// }); 
-
-// const puerto = 4000;
-
-// servidor.listen(puerto, () => {
-//   console.log(`El servidor esta escuchando en http://localhost: ${puerto}...`);
+// app.get('/api/cursos', (req, res) => {
+//   res.send(JSON.stringify(infoCursos));
 // });
 
-/*---------RESPONSE=RESPUESTA-------*/
+// // Parametros de ruta / URL / Cursos de programacion
+// app.get('/api/cursos/programacion/:lenguaje', (req, res) => {
+//   const lenguaje = req.params.lenguaje;
+//   const resultados = infoCursos.programacion.filter(curso => curso.lenguaje === lenguaje);
 
-// const http = require('http');
+//   if (resultados.length === 0) {
+//     return res.status(404).send(`No se encontraron cursos de ${lenguaje}`);
+//   }
 
-// const servidor = http.createServer((req, res) => { 
-//   console.log('===> res (respuesta)');
+//   res.send(JSON.stringify(resultados));
 
-  // console.log(res.statusCode); // 200 ok
-  // res.statusCode = 404;
-  // console.log(res.statusCode); // 404 Not found
+// });
 
-//   res.setHeader('content-type', 'application/json'); // Obtener elementos de los header/cabeceras
-//   console.log(res.getHeaders());
+// // Parametros de ruta / URL / Cursos de matematicas
+
+// app.get('/api/cursos/matematicas', (req, res) => {
+//   res.send(JSON.stringify(infoCursos.matematicas));
+// });
+
+// app.get('/api/cursos/matematicas/:tema', (req, res) => {
+//   const tema = req.params.tema;
+//   const resultados = infoCursos.matematicas.filter(curso => curso.tema == - tema);
+
+//   if (resultados.length === 0) {
+//     return res.status(404).send(`No se encontraron cursos de ${tema}`);
+//   }
+
+//   if (req.query.ordernar === 'vistas') {
+//     return res.send(JSON.stringify(resultados.sort((a, b) => b.vistas - a.vistas)))
+//   } 
+//   res.send(JSON.stringify(resultados));
+// });
+
+// routerProgramacion.get('/:lenguaje/:nivel', (req, res) => {
+//   const lenguaje = req.params.lenguaje;
+//   const nivel = req.params.nivel;
+
+//   const resultado = infoCursos.programacion.filter(curso => curso.lenguaje === lenguaje && curso.nivel === nivel);
+
+//   if (resultados.length === 0) {
+//     return res.status(404).send(`No se encontraron cursos de ${lenguaje} de nivel ${nivel}`)
+//   }
+//   console.log(req.query.ordenar);
   
-//   res.end('Hola, mundo');
-// }); 
-
-// const puerto = 4000;
-
-// servidor.listen(puerto, () => {
-//   console.log(`El servidor esta escuchando en http://localhost: ${puerto}...`);
+//   res.send(JSON.stringify(resultados));
 // });
 
-/*---------------MODULO URL--------------*/
-// const miURL = new URL('http://www.ejemplo.org/cursos/programacion?ordernar=vistas&nivel=1');
-// console.log(miURL.hostname); // www.ejemplo.org 
-// console.log(miURL.pathname); // cursos/programacion 
-// console.log(miURL.searchParams);
-// console.log(miURL.searchParams.get('ordenar'));
-// console.log(miURL.searchParams.get('nivel'));
-// console.log(miURL.protocol);
 
-/*-----------MANEJAR LAS DISTINTAS RUTAS EN UN SERVIDOR CON NODE.JS---------*/ 
-const http = require('http');
-const {infoCursos} = require('./cursos');
+// const PUERTO = process.env.PORT || 3000;
 
-const servidor = http.createServer((req, res) => {
-  const {method} = req;
+// app.listen(PUERTO, () => {
+//   console.log(`El servidor esta escuchando en el puerto ${PUERTO}...`);
+// });
 
-  switch(method) {
-    case 'GET':
-      return manejarSolicitudGET(req, res);
-    case 'POST':
-      return manejarSolicitudPOST(req, res);
-    default:
-      res.statusCode = 501;
-      res.end(`El metodo usado no puede ser manejado por el servidor: ${method}`);
-  }
+/*---------ROUTERS EN DISTINTOS ARCHIVOS----------*/
+
+// const express = require('express');
+// const app = express();
+
+// const {infoCursos} = require('./datos/cursos.js');
+
+// // Routers
+// const routerProgramacion = require('./routers/programacion.js');
+// app.use('/api/cursos/programacion', routerProgramacion);
+
+// const routerMatematicas = require('./routers/matematicas.js');
+// app.use('/api/cursos/matematicas', routerMatematicas);
+
+// // Routing
+// app.get('/', (req, res) => {
+//   res.send('Mi primer servidor con Express. Cursos 💻.');        
+// });
+
+// app.get('/api/cursos', (req, res) => {
+//   res.send(JSON.stringify(infoCursos));
+// });
+
+// const PUERTO = process.env.PORT || 3000;
+
+// app.listen(PUERTO, () => {
+//   console.log(`El servidor esta escuchando en el puerto ${PUERTO}...`);      
+// });
+
+
+/*-----------POST,PUT, PATCH Y DELETE----------*/
+
+const express = require('express');
+const app = express();
+
+const {infoCursos} = require('./datos/cursos.js');
+
+// Routers
+const routerProgramacion = require('./routers/programacion.js');
+app.use('/api/cursos/programacion', routerProgramacion);
+
+const routerMatematicas = require('./routers/matematicas.js');
+app.use('/api/cursos/matematicas', routerMatematicas);
+
+// Routing
+app.get('/', (req, res) => {
+  res.send('Mi primer servidor con Express. Cursos 💻.');        
 });
 
-function manejarSolicitudGET(req, res) {
-  const path = req.url;
-
-  console.log(res.statusCode); // Sera 200 ok, por defecto
-
-  if (path === '/') {
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    return res.end('Bienvenidos a mi primer servidor y API creados con Node.js');
-  } else if (path === '/cursos') {
-    res.end(JSON.stringify(infoCursos));
-  } else if (path === '/cursos/programacion') {
-    return res.end(JSON.stringify(infoCursos.programacion));
-  }
-  res.statusCode = 404;
-  return res.end('El recurso solicitado no existe...');
-}
-
-function manejarSolicitudPOST(req, res) {
-  const path = req.url;
-  if (path === '/cursos/programacion') {
-    
-    let cuerpo = '';
-    req.on('data', contenido => {
-      cuerpo += contenido.toString();
-    });
-
-    req.on('end', () => {
-      console.log(cuerpo);
-      console.log(typeof cuerpo);
-      // Convertir a un objeto de JavasScript
-      cuerpo = JSON.parse(cuerpo);
-      console.log(typeof cuerpo);
-      console.log(cuerpo.titulo);
-      res.end('El servidor recibio una solicitud POST para /cursos/programacion');
-
-    });
-    // return res.end('El servidor recibio una solicitud POST para /cursos/programacion');
-  }
-}
-const PUERTO = 3000;
-
-servidor.listen(PUERTO, () => {
-  console.log(`El servidor esta escuchando en el puerto ${PUERTO}`);
+app.get('/api/cursos', (req, res) => {
+  res.send(JSON.stringify(infoCursos));
 });
 
+const PUERTO = process.env.PORT || 3000;
 
-
-
-
+app.listen(PUERTO, () => {
+  console.log(`El servidor esta escuchando en el puerto ${PUERTO}...`);      
+});
